@@ -1,21 +1,11 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 25.03.2023 21:48:41
-// Design Name: 
+// Engineer: Łukasz Orzeł
+// Engineer: Jakub Świebocki
 // Module Name: InvertSQRoot
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
+// Project Name: Fast inverse square root 
+// Target Devices: ZedBoard
+// Tool Versions: Vivado 2018.2
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
