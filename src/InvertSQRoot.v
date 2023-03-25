@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Engineer: Lukasz Orzel‚
+// Engineer: Lukasz Orzel
 // Engineer: Jakub Swiebocki
 // Module Name: InvertSQRoot
 // Project Name: Fast inverse square root 
