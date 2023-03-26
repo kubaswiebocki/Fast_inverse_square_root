@@ -21,9 +21,10 @@ module InvertSQRoot(
     
 reg  [31:0] Data_temp, Data_temp_nxt;
 reg  [31:0] DataOut_nxt;
-reg         Data_sign;
-reg  [7:0]  exp;
-reg  [31:0] mantysa;
+reg  [31:0] i, exponent;
+
+localparam  E = 127;
+localparam  MAGIC = 32'h5f3759df;
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -43,17 +44,7 @@ always@ (posedge clk) begin
 //Algorytm InverSQRoot
 //////////////////////////////////////////////////////////////////////////////////
 always@* begin
-    Data_sign = DataIn[31];
-    exp = DataIn[30:23] - 127;
-    mantysa = DataIn[22:0] | {1'b1, 23'h0};
-    if (exp >= 0)
-        Data_temp_nxt = {1'b1, mantysa[22:0]};
-    else
-        Data_temp_nxt = {1'b1, mantysa[14:0], {(-exp)-{1'b0}}};
-    Data_temp_nxt = Data_temp_nxt >> 1;  
-    Data_temp_nxt[30:23] = Data_temp_nxt[30:23] - 127 + 16;
-    Data_temp_nxt[31] = Data_sign;
-    DataOut = Data_temp_nxt;
-    end
+    DataOut_nxt = MAGIC - (DataIn >> 1);    
+end
 //////////////////////////////////////////////////////////////////////////////////
 endmodule
