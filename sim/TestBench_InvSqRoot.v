@@ -6,7 +6,7 @@ module TestBench_InvSqRoot;
 
 reg clk;
 reg rst = 0;
-wire [31:0] DataIn = 2;
+reg [31:0] DataIn;
 wire [31:0] DataOut;
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -37,6 +37,12 @@ always begin
 initial begin
     $display("Start simulation of InvertSQRoot");
     #20
+    DataIn = 32'h3fc00000; // 0.5
+    #20
+    $display("Wartoœæ wejœciowa: %h, Wartoœæ oczekiwana: 0x5f3759df, Wartoœæ wyjœciowa: %h", DataIn, DataOut);
+    DataIn = 32'h3f800000; // 1
+    #10;
+    $display("Wartoœæ wejœciowa: %h, Wartoœæ oczekiwana: 0x3f800000, Wartoœæ wyjœciowa: %h", DataIn, DataOut);
     //#20; rst = 1; #20;
     //wait (vs == 1'b0);
     //@(negedge vs) $display("Info: negedge VS at %t",$time);
