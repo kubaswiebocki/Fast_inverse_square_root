@@ -9,42 +9,51 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-//Conncet and Register + Params
-//////////////////////////////////////////////////////////////////////////////////
+//************************************************************************//
 module InvertSQRoot(
-    output reg  [31:0] DataOut,
-    
-    input wire [31:0] DataIn,
     input wire clk,
-    input wire rst
+    input wire rst,
+    input wire [31:0] DataIn,
+    
+    output wire [31:0] DataOut
     );
     
-reg  [31:0] Data_temp, Data_temp_nxt;
-reg  [31:0] DataOut_nxt;
-reg  [31:0] i, exponent;
+wire [31:0] InitData, Half_DataIN, Data_mul_square, Data_mul_by_1_5;
 
-localparam  E = 127;
-localparam  MAGIC = 32'h5f3759df;
+//Init_InvSQRoot
+//************************************************************************//
+Init_InvSQRoot Init_InvSQRoot(
+    .clk(clk),
+    .rst(rst),
+    .DataIn(DataIn),
+    
+    .DataOut(InitData),
+    .Half_DataIN(Half_DataIN)
+    );
 
-//////////////////////////////////////////////////////////////////////////////////
+//Mul y*y
+//**********************************************************************//
+Multiplication Multiplication_y_by_y(
+    .clk(clk),
+    .rst(rst),
+    .Num_1(InitData),
+    .Num_2(InitData),
+    
+    .NumOut(Data_mul_square)
+    );
+    
+//Mul x2*y
+//**********************************************************************//
+Multiplication Multiplication_by_1_5(
+        .clk(clk),
+        .rst(rst),
+        .Num_1(Data_mul_square),
+        .Num_2(Half_DataIN),
+        
+        .NumOut(Data_mul_by_1_5)
+        );
+//Assings    
+//**********************************************************************//
+assign DataOut = InitData;
 
-//Zegar
-//////////////////////////////////////////////////////////////////////////////////
-always@ (posedge clk) begin
-    if(rst) begin
-        DataOut <= 0;
-        end
-    else begin
-        DataOut <= DataOut_nxt;
-        Data_temp <= Data_temp_nxt;
-        end
-    end
-//////////////////////////////////////////////////////////////////////////////////
-
-//Algorytm InverSQRoot
-//////////////////////////////////////////////////////////////////////////////////
-always@* begin
-    DataOut_nxt = MAGIC - (DataIn >> 1);    
-end
-//////////////////////////////////////////////////////////////////////////////////
 endmodule
