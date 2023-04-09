@@ -31,10 +31,11 @@ always@ (posedge clk) begin
     end
 
 always@* begin // Mul operations
-    exp_square_nxt = Num_1[30:23] + Num_2[30:23] - 127; //exponenty
-    mantissa_square_nxt = (Num_1[22:0] * Num_2[22:0]); //mantysy
-    round_square_nxt = mantissa_square[23:1] >> 1; // zaokr¹glanie mantysy
-    exp_round_nxt = exp_square + mantissa_square[24];
+    exp_square_nxt = Num_1[30:23] + Num_2[30:23] - 127; //dodawanie exponenty
+    mantissa_square_nxt = ({1'b1, Num_1[22:0]} * {1'b1, Num_2[22:0]}); //mnozenie mantysy
+    
+    round_square_nxt = mantissa_square[46:24]; // zaokr¹glanie mantysy
+    exp_round_nxt = exp_square + mantissa_square[47];
     NumOut_nxt = {1'b0, exp_round, round_square};
 end
 

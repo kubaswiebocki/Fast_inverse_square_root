@@ -31,21 +31,23 @@ always begin
     end
     
 //////////////////////////////////////////////////////////////////////////////////
+real DataOut_real;
 
 //Command window
 //////////////////////////////////////////////////////////////////////////////////
 initial begin
     $display("Start simulation of InvertSQRoot");
-    #20
     DataIn = 32'h3dcccccd; // 0.1
-    #20
-    $display("Wartoœæ wejœciowa: %h, Wartoœæ wyjœciowa: %h", DataIn, DataOut);
+    DataOut_real = DataOut;
+    $display("Wartoœæ wejœciowa: %h, Wartoœæ wyjœciowa: %f", DataIn, DataOut_real);
+    #2000
     DataIn = 32'h3f000000; // 0.5
-    #20
-    $display("Wartoœæ wejœciowa: %h, Wartoœæ wyjœciowa: %h", DataIn, DataOut);
+    DataOut_real = DataOut[22:0];
+    $display("Wartoœæ wejœciowa: %h, Wartoœæ wyjœciowa: %f", DataIn, DataOut_real);
+    #2000
     DataIn = 32'h3f800000; // 1
-    #10;
-    $display("Wartoœæ wejœciowa: %h, Wartoœæ wyjœciowa: %h", DataIn, DataOut);
+    DataOut_real = DataOut[22:0];
+    $display("Wartoœæ wejœciowa: %h, Wartoœæ wyjœciowa: %f", DataIn, DataOut_real);
     $display("Simulation is over, check the waveforms.");
     $stop;
     end

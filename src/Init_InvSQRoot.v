@@ -5,6 +5,7 @@
 module Init_InvSQRoot(
     output reg [31:0] DataOut,
     output reg [31:0] Half_DataIN,
+    output reg [31:0] OneAndHalf,
     
     input wire [31:0] DataIn,
     input wire clk,
@@ -17,7 +18,7 @@ reg [31:0] DataOut_nxt;
 reg [22:0] mantissa, mantissa_nxt;
 reg [7:0]  exponent, exponent_nxt;
 
-reg [31:0] one_and_half = 32'b0;
+reg [31:0] OneAndHalf_nxt;
   
 localparam  MAGIC = 32'h5f3759df;
 
@@ -35,6 +36,7 @@ always@ (posedge clk) begin
         
         mantissa <= mantissa_nxt;
         exponent <= exponent_nxt;
+        OneAndHalf <= OneAndHalf_nxt;
         end
     end
 //////////////////////////////////////////////////////////////////////////////////
@@ -48,9 +50,7 @@ always@* begin
     Half_DataIN_nxt = {1'b0, exponent, mantissa};
     
 // create the 1.5 constant
-    one_and_half[31] = 0; // sign bit
-    one_and_half[30:23] = 8'b01111111; // exponent
-    one_and_half[22:0] = 23'b10000000000000000000000; // mantissa (1.5 in binary)
+    OneAndHalf_nxt = {1'b0, 8'b01111111, 23'b10000000000000000000000};
     
 //What the fuck
     DataOut_nxt = MAGIC - (DataIn >> 1);
