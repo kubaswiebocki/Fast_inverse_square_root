@@ -32,7 +32,7 @@ always begin
     
 //////////////////////////////////////////////////////////////////////////////////
 real DataOut_real;
-
+   
 //Command window
 //////////////////////////////////////////////////////////////////////////////////
 initial begin
@@ -40,11 +40,11 @@ initial begin
     DataIn = 32'h3dcccccd; // 0.1
     DataOut_real = DataOut;
     $display("Wartoœæ wejœciowa: %h, Wartoœæ wyjœciowa: %f", DataIn, DataOut_real);
-    #2000
-    DataIn = 32'h3f000000; // 0.5
+    #200
+    DataIn = 32'h3efae148; // 0.49
     DataOut_real = DataOut[22:0];
     $display("Wartoœæ wejœciowa: %h, Wartoœæ wyjœciowa: %f", DataIn, DataOut_real);
-    #2000
+    #200
     DataIn = 32'h3f800000; // 1
     DataOut_real = DataOut[22:0];
     $display("Wartoœæ wejœciowa: %h, Wartoœæ wyjœciowa: %f", DataIn, DataOut_real);

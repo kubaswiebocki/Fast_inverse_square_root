@@ -1,43 +1,48 @@
 `timescale 1ns / 1ps
 
-//////////////////////////////////////////////////////////////////////////////////
-//Multiplication fun
+//Registers
 //////////////////////////////////////////////////////////////////////////////////
 module Multiplication(
     input wire clk,
     input wire rst,
-    input wire [31:0] Num_1,
-    input wire [31:0] Num_2,
+    input wire [31:0] Number_1,
+    input wire [31:0] Number_2,
     
-    output reg [31:0] NumOut
+    output reg [31:0] Product,
+    output reg [31:0] Init_data
 );
 
-reg [31:0] NumOut_nxt;
-reg [7:0] exp_square, exp_square_nxt, exp_round, exp_round_nxt;
-reg [47:0] mantissa_square, mantissa_square_nxt;
-reg [22:0] round_square, round_square_nxt;
+reg [47:0] M_Square, M_Square_nxt;
+reg [31:0] Product_nxt, Init_temp;
+reg [7:0]  E_Square, E_Square_nxt;
+//////////////////////////////////////////////////////////////////////////////////
 
+//Always
+//////////////////////////////////////////////////////////////////////////////////
 always@ (posedge clk) begin
     if(rst) begin
-        NumOut <= 0;
+        Product <= 0;
         end
     else begin
-        NumOut <= NumOut_nxt;
-        exp_square <= exp_square_nxt;
-        exp_round <= exp_round_nxt;
-        mantissa_square <= mantissa_square_nxt;
-        round_square <= round_square_nxt;
+        Product <= Product_nxt;
+        E_Square <= E_Square_nxt;
+        M_Square <= M_Square_nxt;
+        
+        Init_temp <= Number_1;
+        Init_data <= Init_temp;
         end
     end
+//////////////////////////////////////////////////////////////////////////////////
 
-always@* begin // Mul operations
-    exp_square_nxt = Num_1[30:23] + Num_2[30:23] - 127; //dodawanie exponenty
-    mantissa_square_nxt = ({1'b1, Num_1[22:0]} * {1'b1, Num_2[22:0]}); //mnozenie mantysy
+// Mul operations
+//////////////////////////////////////////////////////////////////////////////////
+always@* begin 
+    E_Square_nxt = Number_1[30:23] + Number_2[30:23] - 127;            //Add exps
+    M_Square_nxt = ( {1'b1, Number_1[22:0]} * {1'b1, Number_2[22:0]} );//Mul manti
     
-    round_square_nxt = mantissa_square[46:24]; // zaokr¹glanie mantysy
-    exp_round_nxt = exp_square + mantissa_square[47];
-    NumOut_nxt = {1'b0, exp_round, round_square};
+    Product_nxt = {1'b0, E_Square + M_Square[47], M_Square[46:24]};    //(Sign) + (Exponent+overflow) + (RoundMatni)
 end
+//////////////////////////////////////////////////////////////////////////////////
 
 endmodule
 //////////////////////////////////////////////////////////////////////////////////

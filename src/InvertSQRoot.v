@@ -18,63 +18,37 @@ module InvertSQRoot(
     output wire [31:0] DataOut
     );
     
-wire [31:0] InitData, Half_DataIN, Data_mul_square, Data_mul_by_1_5, Data_sub, OneAndHalf, Data_result;
+//************************************************************************//
+wire [31:0] InitData, Half_DataIN, Data_result, DataTEST;
 
 //Init_InvSQRoot
-//************************************************************************//
 Init_InvSQRoot Init_InvSQRoot(
     .clk(clk),
     .rst(rst),
     .DataIn(DataIn),
     
     .DataOut(InitData),
-    .Half_DataIN(Half_DataIN),
-    .OneAndHalf(OneAndHalf)
+    .Half_DataIN(Half_DataIN)
     );
 
-//Mul y*y
-//**********************************************************************//
-Multiplication Multiplication_y_by_y(
+//NewtonApprox
+NewtonApprox NewtonApprox_1(
     .clk(clk),
     .rst(rst),
-    .Num_1(InitData),
-    .Num_2(InitData),
+    .Data_in1(InitData),
+    .Data_in2(Half_DataIN),
     
-    .NumOut(Data_mul_square)
+    .Data_out(Data_result)
     );
     
-//Mul x2*y
-//**********************************************************************//
-Multiplication Multiplication_by_1_5(
+Multiplication MultiplicationTEST(
     .clk(clk),
     .rst(rst),
-    .Num_1(Data_mul_square),
-    .Num_2(Half_DataIN),
+    .Number_1(32'h3f000000), //0.5
+    .Number_2(32'h3f000000),
     
-    .NumOut(Data_mul_by_1_5)
+    .Product(DataTEST)
     );
-        
-//Substraction
-        //**********************************************************************//
-Substraction Substraction(
-    .clk(clk),
-    .rst(rst),
-    .NumA(OneAndHalf), //0.2563
-    .NumB(Data_mul_by_1_5),
-
-    .NumOut(Data_sub)
-    );
-    
-//Mul y*rest
-    //**********************************************************************//
-    Multiplication Multiplication_y_by_rest(
-        .clk(clk),
-        .rst(rst),
-        .Num_1(Data_sub),
-        .Num_2(InitData),
-        
-        .NumOut(Data_result)
-        );
 //Assings    
 //**********************************************************************//
 assign DataOut = Data_result;
