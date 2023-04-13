@@ -40,7 +40,7 @@ always@* begin
     E_Square_nxt = Number_1[30:23] + Number_2[30:23] - 127;            //Add exps
     M_Square_nxt = ( {1'b1, Number_1[22:0]} * {1'b1, Number_2[22:0]} );//Mul manti
     
-    Product_nxt = {1'b0, E_Square + M_Square[47], M_Square[46:24]};    //(Sign) + (Exponent+overflow) + (RoundMatni)
+    Product_nxt = {1'b0, E_Square + M_Square[47], ( M_Square[47] ? M_Square[46:24] : M_Square[45:23] )};    //(Sign) + (Exponent+overflow) + (RoundMatni)
 end
 //////////////////////////////////////////////////////////////////////////////////
 

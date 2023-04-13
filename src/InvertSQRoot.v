@@ -19,7 +19,7 @@ module InvertSQRoot(
     );
     
 //************************************************************************//
-wire [31:0] InitData, Half_DataIN, Data_result, DataTEST;
+wire [31:0] InitData, Half_DataIN, Data_result, DataTEST, DataTEST1, DataTEST2;
 
 //Init_InvSQRoot
 Init_InvSQRoot Init_InvSQRoot(
@@ -39,15 +39,6 @@ NewtonApprox NewtonApprox_1(
     .Data_in2(Half_DataIN),
     
     .Data_out(Data_result)
-    );
-    
-Multiplication MultiplicationTEST(
-    .clk(clk),
-    .rst(rst),
-    .Number_1(32'h3f000000), //0.5
-    .Number_2(32'h3f000000),
-    
-    .Product(DataTEST)
     );
 //Assings    
 //**********************************************************************//

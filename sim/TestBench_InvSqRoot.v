@@ -8,6 +8,8 @@ reg clk;
 reg rst = 0;
 reg [31:0] DataIn;
 wire [31:0] DataOut;
+
+real input_value = 0.5;
 //////////////////////////////////////////////////////////////////////////////////
 
 // Instantiate the InvertSQRoot module.
@@ -32,21 +34,24 @@ always begin
     
 //////////////////////////////////////////////////////////////////////////////////
 real DataOut_real;
-   
+
 //Command window
 //////////////////////////////////////////////////////////////////////////////////
 initial begin
     $display("Start simulation of InvertSQRoot");
-    DataIn = 32'h3dcccccd; // 0.1
-    DataOut_real = DataOut;
+    DataIn = 32'h3f000000; // 0.5
+    #100
+    DataOut_real =(2**(DataOut[30:23]-127))*($itor({1'b1,DataOut[22:0]})/2**23)*((-1)**(DataOut[31]));
     $display("Wartoœæ wejœciowa: %h, Wartoœæ wyjœciowa: %f", DataIn, DataOut_real);
-    #200
-    DataIn = 32'h3efae148; // 0.49
-    DataOut_real = DataOut[22:0];
+    #10
+    DataIn = 32'h3efff2e5; // 0.4999
+    #100
+    DataOut_real =(2**(DataOut[30:23]-127))*($itor({1'b1,DataOut[22:0]})/2**23)*((-1)**(DataOut[31]));
     $display("Wartoœæ wejœciowa: %h, Wartoœæ wyjœciowa: %f", DataIn, DataOut_real);
-    #200
-    DataIn = 32'h3f800000; // 1
-    DataOut_real = DataOut[22:0];
+    #10
+    DataIn = 32'h3e75c28f; // 0.24
+    #100
+    DataOut_real =(2**(DataOut[30:23]-127))*($itor({1'b1,DataOut[22:0]})/2**23)*((-1)**(DataOut[31]));
     $display("Wartoœæ wejœciowa: %h, Wartoœæ wyjœciowa: %f", DataIn, DataOut_real);
     $display("Simulation is over, check the waveforms.");
     $stop;
