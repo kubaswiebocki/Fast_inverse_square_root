@@ -19,7 +19,7 @@ module InvertSQRoot(
     );
     
 //************************************************************************//
-wire [31:0] InitData, Half_DataIN, Data_result, DataTEST, DataTEST1, DataTEST2;
+wire [31:0] InitData, Half_DataIN, Data_result;
 
 //Init_InvSQRoot
 Init_InvSQRoot Init_InvSQRoot(

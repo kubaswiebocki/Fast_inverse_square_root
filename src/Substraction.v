@@ -17,6 +17,7 @@ reg [7:0]  E_Norm, E_Norm_nxt;
  
 localparam OneAndHalf = {1'b0, 8'b01111111, 23'b10000000000000000000000};
 localparam E_max = 8'b01111111;
+localparam Sign = 1'b0;
 
 // Always
 //////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +42,7 @@ always@ (posedge clk) begin
 //////////////////////////////////////////////////////////////////////////////////
 always@* begin
     //Max Eponenta i przesuwanie mantysy
-    Sub_mantissa_nxt = {1'b1, OneAndHalf[22:0]} - ( {1'b1, NumB[22:0]} >> (OneAndHalf[30:23] - NumB[30:23]) ); // 1.5 - ( Num1 shift by diff of exps)
+    Sub_mantissa_nxt = ( {1'b1, OneAndHalf[22:0]} ) - ( {1'b1, NumB[22:0]} >> (OneAndHalf[30:23] - NumB[30:23]) ); // 1.5 - ( Num1 shift by diff of exps)
 
 // Normalizacja
 ///////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +149,7 @@ always@* begin
 ///////////////////////////////////////////////////////////////////////////////////
             
     //Dokonczyc nrmalizacje
-    NumOut_nxt = {1'b0, E_Norm, M_Norm[23:1]};
+    NumOut_nxt = {Sign, E_Norm, M_Norm[23:1]};
     end
 endmodule
 //////////////////////////////////////////////////////////////////////////////////

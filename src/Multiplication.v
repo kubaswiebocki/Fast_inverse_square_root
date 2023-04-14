@@ -15,6 +15,8 @@ module Multiplication(
 reg [47:0] M_Square, M_Square_nxt;
 reg [31:0] Product_nxt, Init_temp;
 reg [7:0]  E_Square, E_Square_nxt;
+
+localparam Sign = 1'b0;
 //////////////////////////////////////////////////////////////////////////////////
 
 //Always
@@ -40,7 +42,7 @@ always@* begin
     E_Square_nxt = Number_1[30:23] + Number_2[30:23] - 127;            //Add exps
     M_Square_nxt = ( {1'b1, Number_1[22:0]} * {1'b1, Number_2[22:0]} );//Mul manti
     
-    Product_nxt = {1'b0, E_Square + M_Square[47], ( M_Square[47] ? M_Square[46:24] : M_Square[45:23] )};    //(Sign) + (Exponent+overflow) + (RoundMatni)
+    Product_nxt = {Sign, E_Square + M_Square[47], ( M_Square[47] ? M_Square[46:24] : M_Square[45:23] )};    //(Sign) + (Exponent+overflow) + (RoundMatni)
 end
 //////////////////////////////////////////////////////////////////////////////////
 
