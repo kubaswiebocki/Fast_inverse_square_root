@@ -13,6 +13,7 @@
 module InvertSQRoot(
     input wire clk,
     input wire rst,
+    input wire ce,
     input wire [31:0] DataIn,
     
     output wire [31:0] DataOut,
@@ -27,6 +28,7 @@ wire Valid;
 Init_InvSQRoot Init_InvSQRoot(
     .clk(clk),
     .rst(rst),
+    .ce(ce),
     .DataIn(DataIn),
     
     .DataOut(InitData),
@@ -37,6 +39,7 @@ Init_InvSQRoot Init_InvSQRoot(
 NewtonApprox NewtonApprox_1(
     .clk(clk),
     .rst(rst),
+    .ce(ce),
     .Data_in1(InitData),
     .Data_in2(Half_DataIN),
     

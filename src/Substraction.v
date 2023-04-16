@@ -4,6 +4,7 @@
 module Substraction(
     input wire clk,
     input wire rst,
+    input wire ce,
     input wire [31:0] NumB,
     input wire [31:0] Init,
     

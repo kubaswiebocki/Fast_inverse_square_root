@@ -3,6 +3,7 @@
 module NewtonApprox(
     input wire clk,
     input wire rst,
+    input wire ce,
     input wire [31:0] Data_in1,
     input wire [31:0] Data_in2,
     
@@ -17,6 +18,7 @@ wire [31:0] InitData_1, InitData_2, InitData_3, Data_mul_square, Data_mul_by_1_5
 Multiplication Multiplication_x2_y(
     .clk(clk),
     .rst(rst),
+    .ce(ce),
     .Number_1(Data_in1),
     .Number_2(Data_in2),
     
@@ -30,6 +32,7 @@ Multiplication Multiplication_x2_y(
 Multiplication Multiplication_x2y_y(
     .clk(clk),
     .rst(rst),
+    .ce(ce),
     .Number_1(InitData_1),
     .Number_2(Data_mul_by_1_5),
     
@@ -43,6 +46,7 @@ Multiplication Multiplication_x2y_y(
 Substraction Substraction(
     .clk(clk),
     .rst(rst),
+    .ce(ce),
     .NumB(Data_mul_square),
     .Init(InitData_2),
 
@@ -55,6 +59,7 @@ Substraction Substraction(
 Multiplication Multiplication_y_by_rest(
     .clk(clk),
     .rst(rst),
+    .ce(ce),
     .Number_1(InitData_3),
     .Number_2(Data_sub),
     

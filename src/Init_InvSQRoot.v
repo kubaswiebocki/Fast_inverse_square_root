@@ -6,7 +6,7 @@ module Init_InvSQRoot(
     input wire [31:0] DataIn,
     input wire clk,
     input wire rst,
-    
+    input wire ce,
     output reg [31:0] DataOut,
     output reg [31:0] Half_DataIN
     );

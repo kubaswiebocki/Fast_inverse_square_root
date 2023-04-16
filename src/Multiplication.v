@@ -5,6 +5,7 @@
 module Multiplication(
     input wire clk,
     input wire rst,
+    input wire ce,
     input wire [31:0] Number_1,
     input wire [31:0] Number_2,
     
@@ -45,6 +46,7 @@ always@* begin
     
     Product_nxt = {Sign, E_Square + M_Square[47], ( M_Square[47] ? M_Square[46:24] : M_Square[45:23] )};    //(Sign) + (Exponent+overflow) + (RoundMatni)
     if(Product) Valid = 1'b1;
+    else Valid = 1'b0;
 end
 //////////////////////////////////////////////////////////////////////////////////
 

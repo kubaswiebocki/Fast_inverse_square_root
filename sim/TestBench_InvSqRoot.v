@@ -6,7 +6,7 @@ module TestBench_InvSqRoot;
 
 localparam Samples = 1000;
 
-reg clk, rst=0;
+reg clk, rst=0, ce=1;
 reg [31:0] DataIn;
 wire [31:0] DataOut;
 wire DataValid;
@@ -47,6 +47,7 @@ InvertSQRoot InvertSQRoot(
 
 .clk(clk),
 .rst(rst),
+.ce(ce),
 .DataIn(DataIn)
 );
 //////////////////////////////////////////////////////////////////////////////////
