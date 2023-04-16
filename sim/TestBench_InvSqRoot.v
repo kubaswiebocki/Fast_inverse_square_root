@@ -11,10 +11,31 @@ reg [31:0] DataIn;
 wire [31:0] DataOut;
 wire DataValid;
 
-reg [31:0] memory [0:Samples-1], memory_out [0:Samples-1];
-integer i, file_handle;
-
-
+reg [31:0] memory [0:Samples-1];
+reg [31:0] inputs_data [0:Samples-1], verilog_outputs [0:Samples-1], c_outputs [0:Samples-1];
+reg [31:0] input_data, c_output, verilog_output, div;
+integer i, file_handle, stop;
+// Compare results from verilog algortihm with C 
+//////////////////////////////////////////////////////////////////////////////////
+// input input_file, input verilog_output_file, input c_output_file
+task compare_data();
+    begin
+        $readmemb("InputData.mem", inputs_data);
+        $readmemh("OutputData.mem", verilog_outputs);
+        $readmemh("Output_C_data.mem", c_outputs);
+        $display("Start comparing...");
+        for (i=0; i<Samples; i=i+1) begin
+            input_data = inputs_data[i];
+            c_output = c_outputs[i];
+            verilog_output = verilog_outputs[i];
+            div = (verilog_output > c_output) ? verilog_output - c_output: c_output - verilog_output;
+            if(div > 2)
+                $display("%d. Different outputs for %h, C output: %h, Verilog output: %h, Difference: %h", i, input_data, c_output, verilog_output, div);
+            #10;
+        end
+        $display("Comparison done...");
+    end
+endtask
 //////////////////////////////////////////////////////////////////////////////////
 
 // Instantiate the InvertSQRoot module.
@@ -39,11 +60,12 @@ always begin
 
 always begin
     #10; 
-    if(DataValid) $fwriteh(file_handle, "%b\n", DataOut);
+    if(DataValid && !stop) $fwriteh(file_handle, "%h\n", DataOut);
     end
 //////////////////////////////////////////////////////////////////////////////////
 initial begin
-    file_handle= $fopen("OutputData.mem", "wb");
+    stop = 0;
+    file_handle = $fopen("OutputData.mem", "wb");
     $display("OutputData has been opened!");
     
     $readmemb("InputData.mem", memory);
@@ -56,6 +78,8 @@ initial begin
     
     #100; $fclose(file_handle);
     $display("OutputData has been closed!");
+    stop = 1;
+    compare_data();
     $stop;
     end
 //////////////////////////////////////////////////////////////////////////////////
