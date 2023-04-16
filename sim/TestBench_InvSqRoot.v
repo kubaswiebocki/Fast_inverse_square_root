@@ -29,8 +29,9 @@ task compare_data();
             c_output = c_outputs[i];
             verilog_output = verilog_outputs[i];
             div = (verilog_output > c_output) ? verilog_output - c_output: c_output - verilog_output;
-            if(div > 2)
+            if(div > 2) begin
                 $display("%d. Different outputs for %h, C output: %h, Verilog output: %h, Difference: %h", i, input_data, c_output, verilog_output, div);
+            end
             #10;
         end
         $display("Comparison done...");
