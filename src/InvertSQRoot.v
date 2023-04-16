@@ -15,11 +15,13 @@ module InvertSQRoot(
     input wire rst,
     input wire [31:0] DataIn,
     
-    output wire [31:0] DataOut
+    output wire [31:0] DataOut,
+    output wire DataValid
     );
     
 //************************************************************************//
 wire [31:0] InitData, Half_DataIN, Data_result;
+wire Valid;
 
 //Init_InvSQRoot
 Init_InvSQRoot Init_InvSQRoot(
@@ -38,10 +40,12 @@ NewtonApprox NewtonApprox_1(
     .Data_in1(InitData),
     .Data_in2(Half_DataIN),
     
-    .Data_out(Data_result)
+    .Data_out(Data_result),
+    .Valid(Valid)
     );
 //Assings    
 //**********************************************************************//
 assign DataOut = Data_result;
+assign DataValid = Valid;
 
 endmodule

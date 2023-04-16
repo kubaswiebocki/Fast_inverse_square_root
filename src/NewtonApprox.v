@@ -6,7 +6,8 @@ module NewtonApprox(
     input wire [31:0] Data_in1,
     input wire [31:0] Data_in2,
     
-    output wire [31:0] Data_out
+    output wire [31:0] Data_out,
+    output wire Valid
     );
     
 wire [31:0] InitData_1, InitData_2, InitData_3, Data_mul_square, Data_mul_by_1_5, Data_sub, Data_result;
@@ -20,7 +21,8 @@ Multiplication Multiplication_x2_y(
     .Number_2(Data_in2),
     
     .Product(Data_mul_by_1_5),
-    .Init_data(InitData_1)
+    .Init_data(InitData_1),
+    .Valid()
     );
     
 //Mul x2y*y
@@ -32,7 +34,8 @@ Multiplication Multiplication_x2y_y(
     .Number_2(Data_mul_by_1_5),
     
     .Product(Data_mul_square),
-    .Init_data(InitData_2)
+    .Init_data(InitData_2),
+    .Valid()
     );
        
 //Substraction 1.5-x2yy
@@ -55,7 +58,9 @@ Multiplication Multiplication_y_by_rest(
     .Number_1(InitData_3),
     .Number_2(Data_sub),
     
-    .Product(Data_result)
+    .Product(Data_result),
+    .Init_data(),
+    .Valid(Valid)
     );
 //Assings
 //**********************************************************************//

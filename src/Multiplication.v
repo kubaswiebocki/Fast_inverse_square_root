@@ -9,7 +9,8 @@ module Multiplication(
     input wire [31:0] Number_2,
     
     output reg [31:0] Product,
-    output reg [31:0] Init_data
+    output reg [31:0] Init_data,
+    output reg Valid
 );
 
 reg [47:0] M_Square, M_Square_nxt;
@@ -43,6 +44,7 @@ always@* begin
     M_Square_nxt = ( {1'b1, Number_1[22:0]} * {1'b1, Number_2[22:0]} );//Mul manti
     
     Product_nxt = {Sign, E_Square + M_Square[47], ( M_Square[47] ? M_Square[46:24] : M_Square[45:23] )};    //(Sign) + (Exponent+overflow) + (RoundMatni)
+    if(Product) Valid = 1'b1;
 end
 //////////////////////////////////////////////////////////////////////////////////
 
