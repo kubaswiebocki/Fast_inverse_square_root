@@ -35,10 +35,16 @@ always@ (posedge clk) begin
 //////////////////////////////////////////////////////////////////////////////////
 always@* begin
 // create DataIN * 0.5
-    Half_DataIN_nxt = {1'b0, DataIn[30:23] - 8'b0000_0001, DataIn[22:0]}; //Half is just shifting the exp
-    
-//What the fuck
-    DataOut_nxt = MAGIC - (DataIn >> 1);
+    if(ce) begin
+        Half_DataIN_nxt = {1'b0, DataIn[30:23] - 8'b0000_0001, DataIn[22:0]}; //Half is just shifting the exp
+        
+    //What the fuck
+        DataOut_nxt = MAGIC - (DataIn >> 1);
+    end
+    else begin
+        Half_DataIN_nxt = Half_DataIN;
+        DataOut_nxt = DataOut;
+    end
 end
 //////////////////////////////////////////////////////////////////////////////////
 endmodule

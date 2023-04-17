@@ -58,11 +58,16 @@ always begin
     clk = 1'b0; #5;
     clk = 1'b1; #5;
     end
+always begin
+    ce = 1'b1; #600;
+    ce = 1'b0; #600;
+    end
+
 //////////////////////////////////////////////////////////////////////////////////
 
 always begin
     #10; 
-    if(DataValid && !stop) $fwriteh(file_handle, "%h\n", DataOut);
+    if(DataValid && !stop && ce) $fwriteh(file_handle, "%h\n", DataOut);
     end
 //////////////////////////////////////////////////////////////////////////////////
 initial begin
@@ -72,10 +77,17 @@ initial begin
     
     $readmemb("InputData.mem", memory);
     $display("Reading InputData...");
+
     for (i=0; i<Samples; i=i+1) begin
-        DataIn = memory[i];
+        if(ce) begin
+            DataIn = memory[i];
+        end
+        else begin
+            i = i - 1;
+        end
         #10;
         end
+ 
     $display("Reading completed!");
     
     #100; $fclose(file_handle);
