@@ -7,12 +7,15 @@ module Init_InvSQRoot(
     input wire clk,
     input wire rst,
     input wire ce,
+    
     output reg [31:0] DataOut,
-    output reg [31:0] Half_DataIN
+    output reg [31:0] Half_DataIN,
+    output reg ce_out = 1'b1
     );
     
 reg [31:0] Half_DataIN_nxt;
 reg [31:0] DataOut_nxt;
+reg ce_out_nxt;
 
 localparam  MAGIC = 32'h5f3759df;
 
@@ -27,6 +30,7 @@ always@ (posedge clk) begin
     else begin
         DataOut <= DataOut_nxt;
         Half_DataIN <= Half_DataIN_nxt;
+        ce_out <= ce_out_nxt;
         end
     end
 //////////////////////////////////////////////////////////////////////////////////
@@ -35,16 +39,12 @@ always@ (posedge clk) begin
 //////////////////////////////////////////////////////////////////////////////////
 always@* begin
 // create DataIN * 0.5
-    if(ce) begin
-        Half_DataIN_nxt = {1'b0, DataIn[30:23] - 8'b0000_0001, DataIn[22:0]}; //Half is just shifting the exp
-        
-    //What the fuck
-        DataOut_nxt = MAGIC - (DataIn >> 1);
-    end
-    else begin
-        Half_DataIN_nxt = Half_DataIN;
-        DataOut_nxt = DataOut;
-    end
+    Half_DataIN_nxt = {1'b0, DataIn[30:23] - 8'b0000_0001, DataIn[22:0]}; //Half is just shifting the exp
+    ce_out_nxt = ce;
+    
+//What the fuck
+    if(ce_out) DataOut_nxt = MAGIC - (DataIn >> 1);
+    else DataOut_nxt = DataOut;
 end
 //////////////////////////////////////////////////////////////////////////////////
 endmodule

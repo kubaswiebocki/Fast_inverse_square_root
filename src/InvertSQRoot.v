@@ -22,7 +22,7 @@ module InvertSQRoot(
     
 //************************************************************************//
 wire [31:0] InitData, Half_DataIN, Data_result;
-wire Valid;
+wire Valid, ce_1;
 
 //Init_InvSQRoot
 Init_InvSQRoot Init_InvSQRoot(
@@ -32,14 +32,15 @@ Init_InvSQRoot Init_InvSQRoot(
     .DataIn(DataIn),
     
     .DataOut(InitData),
-    .Half_DataIN(Half_DataIN)
+    .Half_DataIN(Half_DataIN),
+    .ce_out(ce_1)
     );
 
 //NewtonApprox
 NewtonApprox NewtonApprox_1(
     .clk(clk),
     .rst(rst),
-    .ce(ce),
+    .ce(ce_1),
     .Data_in1(InitData),
     .Data_in2(Half_DataIN),
     

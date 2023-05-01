@@ -12,7 +12,7 @@ module NewtonApprox(
     );
     
 wire [31:0] InitData_1, InitData_2, InitData_3, Data_mul_square, Data_mul_by_1_5, Data_sub, Data_result;
-
+wire ce_1, ce_2, ce_3;
 //Mul x2*y
 //**********************************************************************//
 Multiplication Multiplication_x2_y(
@@ -24,7 +24,8 @@ Multiplication Multiplication_x2_y(
     
     .Product(Data_mul_by_1_5),
     .Init_data(InitData_1),
-    .Valid()
+    .Valid(),
+    .ce_out(ce_1)
     );
     
 //Mul x2y*y
@@ -32,13 +33,14 @@ Multiplication Multiplication_x2_y(
 Multiplication Multiplication_x2y_y(
     .clk(clk),
     .rst(rst),
-    .ce(ce),
+    .ce(ce_1),
     .Number_1(InitData_1),
     .Number_2(Data_mul_by_1_5),
     
     .Product(Data_mul_square),
     .Init_data(InitData_2),
-    .Valid()
+    .Valid(),
+    .ce_out(ce_2)
     );
        
 //Substraction 1.5-x2yy
@@ -46,12 +48,13 @@ Multiplication Multiplication_x2y_y(
 Substraction Substraction(
     .clk(clk),
     .rst(rst),
-    .ce(ce),
+    .ce(ce_2),
     .NumB(Data_mul_square),
     .Init(InitData_2),
 
     .NumOut(Data_sub),
-    .Init_data(InitData_3)
+    .Init_data(InitData_3),
+    .ce_out(ce_3)
     );
     
 //Mul y*rest
@@ -59,13 +62,14 @@ Substraction Substraction(
 Multiplication Multiplication_y_by_rest(
     .clk(clk),
     .rst(rst),
-    .ce(ce),
+    .ce(ce_3),
     .Number_1(InitData_3),
     .Number_2(Data_sub),
     
     .Product(Data_result),
     .Init_data(),
-    .Valid(Valid)
+    .Valid(Valid),
+    .ce_out()
     );
 //Assings
 //**********************************************************************//
