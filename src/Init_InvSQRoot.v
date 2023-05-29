@@ -26,9 +26,7 @@ localparam  MAGIC = 32'h5f3759df;
 always@ (posedge clk) begin
     if(rst) begin
         DataOut <= 0;
-        DataOut_nxt <= 0;
         Half_DataIN <= 0;
-        Half_DataIN_nxt <= 0;
         ce_out <= 1;
         ce_out_nxt <= 1;
         end
