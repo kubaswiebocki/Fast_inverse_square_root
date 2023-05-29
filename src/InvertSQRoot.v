@@ -16,8 +16,8 @@ module InvertSQRoot(
     input wire ce,
     input wire [31:0] DataIn,
     
-    output wire [31:0] DataOut,
-    output wire DataValid
+    output reg [31:0] DataOut,
+    output reg DataValid
     );
     
 //************************************************************************//
@@ -49,7 +49,17 @@ NewtonApprox NewtonApprox_1(
     );
 //Assings    
 //**********************************************************************//
-assign DataOut = Data_result;
-assign DataValid = Valid;
+always@ (posedge clk) begin
+    if(rst) begin
+        end
+    else if(!Valid) begin
+        DataOut <= DataOut;
+        DataValid <= Valid;
+        end
+    else begin
+        DataOut  <= Data_result;
+        DataValid <= Valid;
+        end
+    end
 
 endmodule

@@ -31,7 +31,7 @@ task compare_data();
             verilog_output = verilog_outputs[i];
             div = (verilog_output > c_output) ? verilog_output - c_output: c_output - verilog_output;
             if(div > 3) begin
-                $display("%d. Different outputs for %h, C output: %h, Verilog output: %h, Difference: %h", i, input_data, c_output, verilog_output, div);
+                $display("%d. Different outputs for %h, C output: %h, Verilog output: %h, Difference: %h", i+1, input_data, c_output, verilog_output, div);
             end
             #10;
         end
@@ -53,10 +53,10 @@ InvertSQRoot InvertSQRoot(
 );
 //////////////////////////////////////////////////////////////////////////////////
 
-always begin
-    ce = 1'b1; #4000;
-    ce = 1'b0; #20;
-    end
+//always begin
+//    ce = 1'b1; #4002;
+//    ce = 1'b0; #100;
+//    end
 
 //Generate CLK
 //////////////////////////////////////////////////////////////////////////////////
@@ -69,6 +69,7 @@ always begin
 always begin
     #10; 
     if(DataValid && !stop) $fwriteh(file_handle, "%h\n", DataOut);
+    else if (!DataValid && DataOut && !stop) $fwriteh(file_handle, "%h\n", DataOut);
     end
 //////////////////////////////////////////////////////////////////////////////////
 initial begin
@@ -79,6 +80,8 @@ initial begin
     $readmemb("InputData.mem", memory);
     $display("Reading InputData...");
     for (i=0; i<Samples; i=i+1) begin
+        if(i >= 400 && i <= 410) ce = 1'b0;
+        else ce = 1'b1;
         DataIn = memory[i];
         #10;
         end

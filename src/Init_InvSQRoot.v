@@ -15,7 +15,7 @@ module Init_InvSQRoot(
     
 reg [31:0] Half_DataIN_nxt;
 reg [31:0] DataOut_nxt;
-reg ce_out_nxt;
+reg ce_out_nxt = 1'b1;
 
 localparam  MAGIC = 32'h5f3759df;
 
@@ -26,11 +26,23 @@ localparam  MAGIC = 32'h5f3759df;
 always@ (posedge clk) begin
     if(rst) begin
         DataOut <= 0;
+        DataOut_nxt <= 0;
+        Half_DataIN <= 0;
+        Half_DataIN_nxt <= 0;
+        ce_out <= 1;
+        ce_out_nxt <= 1;
         end
+        
+    else if(!ce_out) begin
+        DataOut <= DataOut_nxt;
+        Half_DataIN <= Half_DataIN_nxt;
+        ce_out <= ce;
+        end
+        
     else begin
         DataOut <= DataOut_nxt;
         Half_DataIN <= Half_DataIN_nxt;
-        ce_out <= ce_out_nxt;
+        ce_out <= ce;
         end
     end
 //////////////////////////////////////////////////////////////////////////////////
@@ -38,13 +50,8 @@ always@ (posedge clk) begin
 //Algorytm InverSQRoot
 //////////////////////////////////////////////////////////////////////////////////
 always@* begin
-// create DataIN * 0.5
-    Half_DataIN_nxt = {1'b0, DataIn[30:23] - 8'b0000_0001, DataIn[22:0]}; //Half is just shifting the exp
-    ce_out_nxt = ce;
-    
-//What the fuck
-    if(ce_out) DataOut_nxt = MAGIC - (DataIn >> 1);
-    else DataOut_nxt = DataOut;
+    Half_DataIN_nxt = {1'b0, DataIn[30:23] - 8'b0000_0001, DataIn[22:0]}; //Half is just shifting the exp (create DataIN * 0.5)
+    DataOut_nxt = MAGIC - (DataIn >> 1); //What the fuck
 end
 //////////////////////////////////////////////////////////////////////////////////
 endmodule

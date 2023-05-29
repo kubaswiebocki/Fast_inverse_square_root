@@ -16,7 +16,7 @@ module Substraction(
 reg [31:0] NumOut_nxt, Init_temp, Init_temp1;
 reg [23:0] Sub_mantissa, Sub_mantissa_nxt, M_Norm, M_Norm_nxt;
 reg [7:0]  E_Norm, E_Norm_nxt;
-reg ce_in, ce_in_nxt, ce_out_nxt;
+reg ce_nxt, ce_out_nxt;
  
 localparam OneAndHalf = {1'b0, 8'b01111111, 23'b10000000000000000000000};
 localparam E_max = 8'b01111111;
@@ -28,6 +28,20 @@ always@ (posedge clk) begin
     if(rst) begin
         NumOut <= 0;
         end
+    else if(!ce_out) begin
+        NumOut <= NumOut_nxt;
+        Sub_mantissa <= Sub_mantissa_nxt;
+        M_Norm <= M_Norm_nxt;
+        E_Norm <= E_Norm_nxt;
+        
+        Init_temp  <= Init;
+        Init_temp1 <= Init_temp;
+        Init_data  <= Init_temp1;
+        
+        ce_nxt <= ce;
+        ce_out_nxt <= ce_nxt;
+        ce_out <= ce_out_nxt;
+        end
     else begin
         NumOut <= NumOut_nxt;
         Sub_mantissa <= Sub_mantissa_nxt;
@@ -38,7 +52,8 @@ always@ (posedge clk) begin
         Init_temp1 <= Init_temp;
         Init_data  <= Init_temp1;
         
-        ce_in <= ce_in_nxt;
+        ce_nxt <= ce;
+        ce_out_nxt <= ce_nxt;
         ce_out <= ce_out_nxt;
         end
     end
@@ -49,7 +64,6 @@ always@ (posedge clk) begin
 always@* begin
     //Max Eponenta i przesuwanie mantysy
     Sub_mantissa_nxt = ( {1'b1, OneAndHalf[22:0]} ) - ( {1'b1, NumB[22:0]} >> (OneAndHalf[30:23] - NumB[30:23]) ); // 1.5 - ( Num1 shift by diff of exps)
-    ce_in_nxt = ce;
 
 // Normalizacja
 ///////////////////////////////////////////////////////////////////////////////////
@@ -151,15 +165,12 @@ always@* begin
         M_Norm_nxt = Sub_mantissa << 24;
         E_Norm_nxt = E_max - 23;
         end
-        
-    ce_out_nxt = ce_in;
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
             
     //Dokonczyc normalizacje
-    if(ce_out) NumOut_nxt = {Sign, E_Norm, M_Norm[23:1]};
-    else NumOut_nxt = NumOut;
+    NumOut_nxt = {Sign, E_Norm, M_Norm[23:1]};
     end
 endmodule
 //////////////////////////////////////////////////////////////////////////////////
