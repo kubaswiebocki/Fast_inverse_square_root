@@ -14,15 +14,16 @@
 #include "str_acc.h"
 
 //All possible values for the range from 0 to pi/2 in fixed-point (13:10)
-#define NBR_OF_DATA 4
+#define NBR_OF_DATA 100
 //Accelerator input buffer
 u32 data_in[NBR_OF_DATA];
 //Accelerator output buffer
 u32 data_out[NBR_OF_DATA];
 
-//float data_in_c[NBR_OF_DATA];
+float data_in_c[NBR_OF_DATA];
+float data_out_c[NBR_OF_DATA];
 
-int Q_rsqrt( float number )
+float Q_rsqrt( float number )
 {
 	long i;
 	unsigned long r;
@@ -73,16 +74,19 @@ float bitsToFloat(uint32_t bits) {
 
 int main()
 {
+reset_fisr_acc();
+cleanup_platform();
+
 u32 i; //Iterators
 u32 nbr_of_results;
 u32 dataout; //Auxiliary sinus and cosinus values
-data_in[0] = floatToBits(1);
-data_in[1] = floatToBits(0.5);
-data_in[2] = floatToBits(0.1);
+float init_d = 0.001;
 
-//data_in_c[0] = 1;
-//data_in_c[1] = 0.5;
-//data_in_c[2] = 0.1;
+for(i=0; i<NBR_OF_DATA; i++){
+	float x = 0.01 +  init_d*i;
+	data_in[i] = floatToBits(x);
+	data_in_c[i] = x;
+}
 
 	// Initialize FIFOs and accelerator. Check status
 	init_platform();
@@ -98,22 +102,23 @@ data_in[2] = floatToBits(0.1);
     	dataout = RESULT_REG_SIN(data_out[i]);
 
     	float floatData = bitsToFloat(dataout);
-        float fval = floatData;
-    	int whole, thousandths;
-    	whole = fval;
-    	thousandths = (fval - whole) * 1000000;
-    	xil_printf("%d.%6d\n\r", whole, thousandths);
+    	float floatDataC = bitsToFloat(Q_rsqrt(data_in_c[i-1]));
+    	float diff = floatDataC - floatData;
+    	if(diff < 0) diff = floatData - floatDataC;
 
-//        for(i=1; i<nbr_of_results; i++){
-//        	dataout = RESULT_REG_SIN(data_out[i]);
-//
-//        float fval = floatData;
-//    	int whole, thousandths;
-//    	whole = fval;
-//    	thousandths = (fval - whole) * 1000000;
-//    	xil_printf("%d.%6d\n\r", whole, thousandths);
-
+    	if(diff > 0.0000008){
+			printf("FAILED: ");
+			printf(" -> Sample: %.4f", (0.01 +  init_d*(i-1)));
+			printf(" -> Verilog: %.8f",floatData);
+			printf(" -> C_algorithm: %.8f",floatDataC);
+			printf(" -> Diff: %.8f\n\r",diff);
+    	}
+    	else{
+    		printf("PASSED: ");
+    		printf(" -> Sample: %.4f \n\r", (0.01 +  init_d*(i-1)));
+    	}
     }
+    printf("Processing done");
 	
 error:
 	reset_fisr_acc();
