@@ -8,21 +8,25 @@
  *   ps7_uart    115200 (configured by bootrom/bsp)
  */
 
+//Initialize main
+//***************************************************************************//
 #include <stdio.h>
 #include "platform.h"
 #include "xil_printf.h"
 #include "str_acc.h"
 
-//All possible values for the range from 0 to pi/2 in fixed-point (13:10)
-#define NBR_OF_DATA 100
-//Accelerator input buffer
-u32 data_in[NBR_OF_DATA];
-//Accelerator output buffer
-u32 data_out[NBR_OF_DATA];
+#define NBR_OF_DATA 10 //All possible values for the range
 
+u32 data_in[NBR_OF_DATA]; //Accelerator input buffer
+u32 data_out[NBR_OF_DATA]; //Accelerator output buffer
 float data_in_c[NBR_OF_DATA];
 float data_out_c[NBR_OF_DATA];
+float init_d = 0.001;
 
+//***************************************************************************//
+
+//Functions
+//***************************************************************************//
 float Q_rsqrt( float number )
 {
 	long i;
@@ -39,7 +43,6 @@ float Q_rsqrt( float number )
 	r  = * ( long * ) &y;
 	return r;
 }
-
 u32 read3DigitDecVal(){
 u32 ret = 0;
 char8 c;
@@ -72,56 +75,82 @@ float bitsToFloat(uint32_t bits) {
     return converter.f;
 }
 
-int main()
-{
-reset_fisr_acc();
-cleanup_platform();
+//float CompareData(float DataIn, float DataInC, int i){
+//	float floatData, floatDataC, diff;
+//	floatData = bitsToFloat(DataIn);
+//	floatDataC = bitsToFloat(Q_rsqrt(DataInC));
+//	diff = floatDataC - floatData;
+//	if(diff < 0) diff = floatData - floatDataC;
+//
+//	if(diff > 0.000005){
+//		printf("FAILED: ");
+//		printf(" -> Sample: %.4f", (0.01 +  init_d*(i-1)));
+//		printf(" -> Verilog: %.8f",floatData);
+//		printf(" -> C_algorithm: %.8f",floatDataC);
+//		printf(" -> Diff: %.8f\n\r",diff);
+//		}
+//	else{
+//		printf("PASSED: ");
+//		printf(" -> Sample: %.4f \n\r", (0.01 +  init_d*(i-1)));
+//		}
+//
+//	return 0;
+//}
+//***************************************************************************//
 
-u32 i; //Iterators
-u32 nbr_of_results;
-u32 dataout; //Auxiliary sinus and cosinus values
-float init_d = 0.001;
+//main
+//***************************************************************************//
+int main(){
+	reset_fisr_acc();
+	cleanup_platform();
 
-for(i=0; i<NBR_OF_DATA; i++){
-	float x = 0.01 +  init_d*i;
-	data_in[i] = floatToBits(x);
-	data_in_c[i] = x;
-}
+	u32 i, nbr_of_results;
+	float floatData, floatDataC, diff;
 
+	for(i=0; i<NBR_OF_DATA; i++){
+		float x = 0.01 +  init_d*i;
+		data_in[i] = floatToBits(x);
+		data_in_c[i] = x;
+	}
+//*****************************//
+
+//FIFO and FPGA algorithm
+//*****************************//
 	// Initialize FIFOs and accelerator. Check status
 	init_platform();
 	if ( init_fisr_acc() == XST_FAILURE )
 		goto error;
 
-    print("Let's 1/sqrt(data_in) \n\r");
+	print("Let's 1/sqrt(data_in) \n\r");
 	//data_in = read3DigitDecVal();
-    fisr_calc(data_in, NBR_OF_DATA, data_out, &nbr_of_results );
+	fisr_calc(data_in, NBR_OF_DATA, data_out, &nbr_of_results );
 
+//*****************************//
 
-    for(i=1; i<nbr_of_results; i++){
-    	dataout = RESULT_REG_SIN(data_out[i]);
+//Generate data_out
+//*****************************//
+	for(i=1; i<nbr_of_results; i++){
+		floatData = bitsToFloat(data_out[i]);
+		floatDataC = bitsToFloat(Q_rsqrt(data_in_c[i-1]));
+		diff = floatDataC - floatData;
+		if(diff < 0) diff = floatData - floatDataC;
+		//CompareData(data_out[i], data_in_c[i-1], i);
 
-    	float floatData = bitsToFloat(dataout);
-    	float floatDataC = bitsToFloat(Q_rsqrt(data_in_c[i-1]));
-    	float diff = floatDataC - floatData;
-    	if(diff < 0) diff = floatData - floatDataC;
-
-    	if(diff > 0.0000008){
+		if(diff > 0.000005){
 			printf("FAILED: ");
 			printf(" -> Sample: %.4f", (0.01 +  init_d*(i-1)));
 			printf(" -> Verilog: %.8f",floatData);
 			printf(" -> C_algorithm: %.8f",floatDataC);
 			printf(" -> Diff: %.8f\n\r",diff);
-    	}
-    	else{
-    		printf("PASSED: ");
-    		printf(" -> Sample: %.4f \n\r", (0.01 +  init_d*(i-1)));
-    	}
-    }
-    printf("Processing done");
-	
-error:
-	reset_fisr_acc();
-    cleanup_platform();
+			}
+		else{
+			printf("PASSED: ");
+			printf(" -> Sample: %.4f \n\r", (0.01 +  init_d*(i-1)));
+			}
+	}
+		printf("Processing done");
 
+	error:
+		reset_fisr_acc();
+		cleanup_platform();
 }

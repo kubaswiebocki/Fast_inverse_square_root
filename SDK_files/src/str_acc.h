@@ -14,7 +14,7 @@
 // cos - reg (28:16). sin reg(12:0)
 // Looks tricky because we need to save sign bit if sine and cosine
 
-#define RESULT_REG_SIN(param)  ((((s32)param))) //& (s32)0x00001FFF)<<19)>>19)
+//#define RESULT_REG_SIN(param)  ((((s32)param))) //& (s32)0x00001FFF)<<19)>>19)
 //#define RESULT_REG_COS(param)  ((((s32)param & (s32)0x1FFF0000)<< 3)>>19)
 
 
