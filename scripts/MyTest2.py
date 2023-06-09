@@ -1,7 +1,6 @@
 import serial
 import time
 import struct
-import binascii
 
 def bytes_to_u32(byte_data):
     # Dopasuj rozmiar bajtów do 4 bajtów (32 bitów)
@@ -15,43 +14,60 @@ def bytes_to_u32(byte_data):
         u32_list.append(u32_value)
     
     return u32_list
-
 def float_to_ieee754(num):
-    # Konwersja liczby zmiennoprzecinkowej na standard IEEE 754
-    binary = struct.pack('>f', num)  # '>f' - big-endian, 'f' - float
-    bits = ''.join(format(byte, '08b') for byte in binary)
-    return ' '.join([bits[i:i+8] for i in range(0, len(bits), 8)])
-
+    binary = struct.pack('>f', num)  #
+    bits = int.from_bytes(binary, 'big')
+    return bits
+def int32_to_float(int_value):
+    byte_string = struct.pack('!i', int_value)
+    float_value = struct.unpack('!f', byte_string)[0]
+    return float_value
 # Ustawienia portu szeregowego
-port = "COM4"
-baudrate = 115200
-DataTest = []
-for i in range(1500):
-    DataTest.append(i+1)
+def InverSquareRoot(DataTest):
+    port = "COM4"
+    baudrate = 115200
+    times = len(DataTest)
+    x = []
+    try:
+        # Utwórz obiekt Serial do komunikacji
+        ser = serial.Serial(port, baudrate, timeout=1)
+        #print("Nawiązano połączenie przez port szeregowy", port)
+        
+        for i in DataTest:
+            ser.write(float_to_ieee754(i).to_bytes(4,"big"))
 
-try:
-    # Utwórz obiekt Serial do komunikacji
-    ser = serial.Serial(port, baudrate, timeout=1)
-    print("Nawiązano połączenie przez port szeregowy", port) 
-    for i in DataTest:
-        ser.write(i.to_bytes(4,"big"))
-        #ser.write(i)
+        for i in range(times):
+            odebrane_dane = ser.read(4)
+            try:
+                x.append(int32_to_float(bytes_to_u32(odebrane_dane)[0]))
+                #return x
+                #print(i, ": ", x)
+            except:
+                pass
 
-    for i in range(1500):
-        odebrane_dane = ser.read(4)
-        #o = odebrane_dane.decode()
-        print(i, ": ", bytes_to_u32(odebrane_dane))
-        # b = int.from_bytes(o,"big")
-        # s = bin(b)
-        # print(i, ": ", s)
-       #print(str(odebrane_dane)[2:6])
+    except serial.SerialException as e:
+        print("Błąd portu szeregowego:", str(e))
+        return x
+    except KeyboardInterrupt:
+        pass
+        return x
+    finally:
+        # Zamknij połączenie z portem szeregowym
+        if ser and ser.is_open:
+            ser.close()
+            #print("Zamknięto połączenie.")
+        return x
 
-except serial.SerialException as e:
-    print("Błąd portu szeregowego:", str(e))
-except KeyboardInterrupt:
-    pass
-finally:
-    # Zamknij połączenie z portem szeregowym
-    if ser and ser.is_open:
-        ser.close()
-        print("Zamknięto połączenie.")
+ezz = 0
+while(1):
+    #DataTest = [1, 1, 1, 2, 2, 2, 3, 3, 3, 5]
+    DataTest = []
+    ezz = ezz + 1
+    for i in range(500):
+        DataTest.append(ezz)
+    x = InverSquareRoot(DataTest)
+    
+    if len(x) == len(DataTest):
+        print(x[1:])
+    else:
+        print(DataTest)
