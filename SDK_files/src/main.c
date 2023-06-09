@@ -23,7 +23,7 @@ u32 data_out[NBR_OF_DATA]; //Accelerator output buffer
 float data_in_c[NBR_OF_DATA];
 float data_out_c[NBR_OF_DATA];
 float init_d = 0.0001;
-char line[33];
+char line[32];
 
 //***************************************************************************//
 
@@ -135,8 +135,8 @@ int main(){
 	for(i=0; i<10; i++){
 		fgets(line, sizeof(line), stdin);
 		u32 bits = fromBinary(line);
-		printf("%f", uint32ToFloat(bits));
-		printf("\n\r");
+		printf("%f\n\r", uint32ToFloat(bits));
+		//printf("\n\r");
 		data_in[i] = bits;
 	}
 	fisr_calc(data_in, NBR_OF_DATA, data_out, &nbr_of_results );
@@ -150,6 +150,8 @@ int main(){
 		printf(" -> Verilog: %.10f \n\r",floatData);
 		}
 	printf("Processing done\n\r");
+	cleanup_platform();
+	init_platform();
 
 	}
 	error:
