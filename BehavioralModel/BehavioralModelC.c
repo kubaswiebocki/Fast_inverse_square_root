@@ -42,6 +42,5 @@ int main() {
 			printf("Difference |FISR - MATH| -> %.8f\n", abs_val);
 			printf("---------------------------------------------\n");
 		}
-
 	}
 }
