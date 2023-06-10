@@ -22,7 +22,6 @@ def int32_to_float(int_value):
     byte_string = struct.pack('!i', int_value)
     float_value = struct.unpack('!f', byte_string)[0]
     return float_value
-# Ustawienia portu szeregowego
 def InverSquareRoot(DataTest):
     port = "COM4"
     baudrate = 115200
@@ -53,16 +52,16 @@ def InverSquareRoot(DataTest):
             ser.close()
         return x
 
-ezz = 0
+ezz = 0.0
 azz = 10
 while(1):
 #Prepare data
 ################################################
     #DataTest = [1, 1, 1, 2, 2, 2, 3, 3, 3, 5]
     DataTest = []
-    ezz = ezz + 1
-    if(azz == 600):
-        azz = 600
+    ezz = ezz + 0.01
+    if(azz == 100):
+        azz = 100
     else:
         azz = azz + 10
     print(azz)
