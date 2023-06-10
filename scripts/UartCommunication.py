@@ -1,5 +1,4 @@
 import serial
-import time
 import struct
 
 def bytes_to_u32(byte_data):
@@ -25,6 +24,7 @@ def int32_to_float(int_value):
 def InverSquareRoot(DataTest):
     port = "COM4"
     baudrate = 115200
+    DataTest.append(1)
     times = len(DataTest)
     x = []
     try:
@@ -43,14 +43,14 @@ def InverSquareRoot(DataTest):
 
     except serial.SerialException as e:
         print("Błąd portu szeregowego:", str(e))
-        return x
+        return x[1:]
     except KeyboardInterrupt:
         pass
-        return x
+        return x[1:]
     finally:
         if ser and ser.is_open:
             ser.close()
-        return x
+        return x[1:]
 
 ezz = 0.0
 azz = 10
@@ -72,5 +72,5 @@ while(1):
 
 # Algorithm
 ################################################
-    x = InverSquareRoot(DataTest)
-    print(x)
+    x = InverSquareRoot([250000])
+    print(1/x[0])
