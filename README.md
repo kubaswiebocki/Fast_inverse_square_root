@@ -10,7 +10,7 @@ To run python scripts you need install pygame lib:
 ```
 pip install pygame
 ```
-### ObjectMoving
+### FigureMoveIn3D
 The Fast Inverse Square Root algorithm is widely used in various applications, including games. In our project, we implemented a simple application that involves moving object in a 3D space. As the object moves deeper into the scene, a specific effect is applied - object is getting darker.
 
 To perform movement, the arrow keys are used, and the spacebar is used to jump.
