@@ -17,7 +17,7 @@ object_position = [0, 0, -FOCAL_LENGTH]
 object_velocity = [0, 0, 0]
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Perspektywa 3D")
+pygame.display.set_caption("Sterowanie obiekt z wykorzystaniem Fast Inverse Square Root algorithm")
 clock = pygame.time.Clock()
 
 # Functions
@@ -54,9 +54,9 @@ def main():
         keys = pygame.key.get_pressed()
         
         if keys[pygame.K_UP]:
-            object_velocity[2] = -5  
+            object_velocity[2] = -6  
         elif keys[pygame.K_DOWN]:
-            object_velocity[2] = 5  
+            object_velocity[2] = 6  
         else:
             object_velocity[2] = 0
             
@@ -76,12 +76,21 @@ def main():
             else:
                 object_velocity[1] = 0
 
-        object_position[0] += object_velocity[0]
+        if object_position[2] >= -500:
+            object_position[0] -= object_velocity[0]
+        else:
+            object_position[0] += object_velocity[0]
         object_position[1] += object_velocity[1]
         object_position[2] += object_velocity[2]
-
         screen.fill(BG_COLOR)
         draw_object(object_position)
+        font = pygame.font.SysFont(None, 24)
+        text_x = font.render("Position X: {:d}".format(object_position[0]), True, (0, 0, 0))
+        text_y = font.render("Position Y: {:d}".format(object_position[1]), True, (0, 0, 0))
+        text_z = font.render("Position Z: {:d}".format(object_position[2]), True, (0, 0, 0))
+        screen.blit(text_x, (10, 10))
+        screen.blit(text_y, (10, 30))
+        screen.blit(text_z, (10, 50))
         pygame.display.flip()
         clock.tick(60)
 
