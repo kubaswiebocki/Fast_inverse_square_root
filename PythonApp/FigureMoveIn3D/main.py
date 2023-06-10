@@ -10,7 +10,7 @@ BG_COLOR = (255, 255, 255)
 
 OBJECT_SIZE = 350
 OBJECT_COLOR_START = (255, 0, 0)
-OBJECT_COLOR_END = (50, 50, 50)
+OBJECT_COLOR_END = (10, 10, 10)
 FOCAL_LENGTH = 400
 
 object_position = [0, 0, -FOCAL_LENGTH]
@@ -31,7 +31,7 @@ def draw_object(position):
     distance = math.sqrt(position[0]**2 + position[1]**2 + position[2]**2)
     object_size = OBJECT_SIZE / (distance / FOCAL_LENGTH)  
     
-    t = min(distance / (FOCAL_LENGTH * 3), 1) 
+    t = min(distance / (FOCAL_LENGTH * 4), 1) 
     object_color = interpolate_color(OBJECT_COLOR_START, OBJECT_COLOR_END, t)
 
     if position[2] + FOCAL_LENGTH != 0: 
