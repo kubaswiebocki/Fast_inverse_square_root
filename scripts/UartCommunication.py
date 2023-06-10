@@ -60,8 +60,8 @@ while(1):
     #DataTest = [1, 1, 1, 2, 2, 2, 3, 3, 3, 5]
     DataTest = []
     ezz = ezz + 0.01
-    if(azz == 100):
-        azz = 100
+    if(azz == 600):
+        azz = 600
     else:
         azz = azz + 10
     print(azz)
