@@ -1,120 +1,89 @@
-from turtle import distance
 import pygame
-from pygame.locals import *
-import numpy as np
-
-def initialize_vertices(scale_factor):
-    return np.array([
-        [-1, -1, -1],
-        [1, -1, -1],
-        [1, 1, -1],
-        [-1, 1, -1],
-        [-1, -1, 1],
-        [1, -1, 1],
-        [1, 1, 1],
-        [-1, 1, 1]
-    ]) * scale_factor
-def transform_vertices(vertices):
-    distances = np.linalg.norm(vertices - reference_point, axis=1)
-    inv_sqrt_distances = 1 / np.sqrt(distances)
-    transformed_vertices = vertices * inv_sqrt_distances[:, np.newaxis]
-    return transformed_vertices
-
+import math
 
 pygame.init()
+
+# Figures, window settings
 WIDTH = 800
 HEIGHT = 600
 BG_COLOR = (255, 255, 255)
-reference_point = np.array([0, 0, 0])
+
+OBJECT_SIZE = 200
+OBJECT_COLOR_START = (255, 0, 0)
+OBJECT_COLOR_END = (50, 50, 50)
+FOCAL_LENGTH = 500
+
+object_position = [0, 0, -FOCAL_LENGTH]
+object_velocity = [0, 0, 0]
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Zastosowanie algorytmu Fast Inverse Square Root w obrocie figury")
-
-vertices = None
-edges = [
-    (0, 1), (1, 2), (2, 3), (3, 0),
-    (4, 5), (5, 6), (6, 7), (7, 4),
-    (0, 4), (1, 5), (2, 6), (3, 7)]
-
+pygame.display.set_caption("Perspektywa 3D")
 clock = pygame.time.Clock()
 
-def main_loop(scale_factor):
-    global vertices
-    angle_x = 0
-    angle_y = 0
-    rotation_speed = 0.01
-    scale_multiple_factor = 1
-    while True:
+# Functions
+def interpolate_color(start_color, end_color, t):
+    r = int(start_color[0] * (1 - t) + end_color[0] * t)
+    g = int(start_color[1] * (1 - t) + end_color[1] * t)
+    b = int(start_color[2] * (1 - t) + end_color[2] * t)
+    return (r, g, b)
+
+def draw_object(position):
+    distance = math.sqrt(position[0]**2 + position[1]**2 + position[2]**2)
+    object_size = OBJECT_SIZE / (distance / FOCAL_LENGTH)  
+    
+    t = min(distance / (FOCAL_LENGTH * 3), 1) 
+    object_color = interpolate_color(OBJECT_COLOR_START, OBJECT_COLOR_END, t)
+
+    if position[2] + FOCAL_LENGTH != 0: 
+        object_pos_x = position[0] * FOCAL_LENGTH / (position[2] + FOCAL_LENGTH) + WIDTH // 2
+        object_pos_y = position[1] * FOCAL_LENGTH / (position[2] + FOCAL_LENGTH) + HEIGHT // 2
+    else:
+        object_pos_x = WIDTH // 2
+        object_pos_y = HEIGHT // 2
+
+    if 0 <= object_pos_x < WIDTH and 0 <= object_pos_y < HEIGHT: 
+        pygame.draw.circle(screen, object_color, (int(object_pos_x), int(object_pos_y)), int(object_size))
+
+def main():
+    running = True
+    while running:
         for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                return
-            if event.type == KEYDOWN:
-                if event.key == K_1 or event.key == K_KP1:
-                    scale_multiple_factor = 1
-                if event.key == K_2 or event.key == K_KP2:
-                    scale_multiple_factor = 10
-                if event.key == K_3 or event.key == K_KP3:
-                    scale_multiple_factor = 100
-                if event.key == K_4 or event.key == K_KP4:
-                    scale_multiple_factor = 1000
-                if event.key == K_5 or event.key == K_KP5:
-                    scale_multiple_factor = 10000
-                if event.key == K_PLUS or event.key == K_KP_PLUS:
-                    scale_factor += scale_multiple_factor
-                if event.key == K_MINUS or event.key == K_KP_MINUS: 
-                    scale_factor -= scale_multiple_factor
-                if scale_factor >= 100000:
-                    scale_factor = 100000
-                    vertices = initialize_vertices(scale_factor)
-                elif scale_factor <= 1:
-                    scale_factor = 1
-                    vertices = initialize_vertices(scale_factor)
-                else:
-                    vertices = initialize_vertices(scale_factor)
+            if event.type == pygame.QUIT:
+                running = False
 
         keys = pygame.key.get_pressed()
-        if keys[K_LEFT]:
-            angle_y += rotation_speed
-        if keys[K_RIGHT]:
-            angle_y -= rotation_speed
-        if keys[K_UP]:
-            angle_x -= rotation_speed
-        if keys[K_DOWN]:
-            angle_x += rotation_speed
+        
+        if keys[pygame.K_UP]:
+            object_velocity[2] = -5  
+        elif keys[pygame.K_DOWN]:
+            object_velocity[2] = 5  
+        else:
+            object_velocity[2] = 0
+            
+        if keys[pygame.K_LEFT]:
+            object_velocity[0] = 1  
+        elif keys[pygame.K_RIGHT]:
+            object_velocity[0] = -1  
+        else:
+            object_velocity[0] = 0
+
+        if keys[pygame.K_SPACE]:
+            if object_position[1] == 0:  
+                object_velocity[1] = 10  
+        else:
+            if object_position[1] > 0:  
+                object_velocity[1] = -10  
+            else:
+                object_velocity[1] = 0
+
+        object_position[0] += object_velocity[0]
+        object_position[1] += object_velocity[1]
+        object_position[2] += object_velocity[2]
 
         screen.fill(BG_COLOR)
-
-        rotation_matrix_x = np.array([
-            [1, 0, 0],
-            [0, np.cos(angle_x), -np.sin(angle_x)],
-            [0, np.sin(angle_x), np.cos(angle_x)]
-        ])
-
-        rotation_matrix_y = np.array([
-            [np.cos(angle_y), 0, np.sin(angle_y)],
-            [0, 1, 0],
-            [-np.sin(angle_y), 0, np.cos(angle_y)]
-        ])
-
-        rotated_vertices = np.dot(vertices, rotation_matrix_x)
-        rotated_vertices = np.dot(rotated_vertices, rotation_matrix_y)
-
-        transformed_vertices = transform_vertices(rotated_vertices)
-        for edge in edges:
-            start_point = transformed_vertices[edge[0]]
-            end_point = transformed_vertices[edge[1]]
-            pygame.draw.line(screen, (0, 0, 0), (start_point[0] + WIDTH / 2, start_point[1] + HEIGHT / 2),
-                             (end_point[0] + WIDTH / 2, end_point[1] + HEIGHT / 2), 2)
-
-
-        font = pygame.font.SysFont(None, 24)
-        text = font.render("Scale Factor: {:.1f}".format(scale_factor), True, (0, 0, 0))
-        screen.blit(text, (10, 10))
-
+        draw_object(object_position)
         pygame.display.flip()
         clock.tick(60)
 
-
-scale_factor = 2000
-vertices = initialize_vertices(scale_factor)
-main_loop(scale_factor)
+main()
+pygame.quit()
