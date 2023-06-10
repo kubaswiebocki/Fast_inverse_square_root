@@ -29,9 +29,8 @@ def InverSquareRoot(DataTest):
     times = len(DataTest)
     x = []
     try:
-        # Utwórz obiekt Serial do komunikacji
         ser = serial.Serial(port, baudrate, timeout=1)
-        #print("Nawiązano połączenie przez port szeregowy", port)
+        ser.write(times.to_bytes(4,"big"))
         
         for i in DataTest:
             ser.write(float_to_ieee754(i).to_bytes(4,"big"))
@@ -40,8 +39,6 @@ def InverSquareRoot(DataTest):
             odebrane_dane = ser.read(4)
             try:
                 x.append(int32_to_float(bytes_to_u32(odebrane_dane)[0]))
-                #return x
-                #print(i, ": ", x)
             except:
                 pass
 
@@ -52,22 +49,29 @@ def InverSquareRoot(DataTest):
         pass
         return x
     finally:
-        # Zamknij połączenie z portem szeregowym
         if ser and ser.is_open:
             ser.close()
-            #print("Zamknięto połączenie.")
         return x
 
 ezz = 0
+azz = 10
 while(1):
+#Prepare data
+################################################
     #DataTest = [1, 1, 1, 2, 2, 2, 3, 3, 3, 5]
     DataTest = []
     ezz = ezz + 1
-    for i in range(500):
-        DataTest.append(ezz)
-    x = InverSquareRoot(DataTest)
-    
-    if len(x) == len(DataTest):
-        print(x[1:])
+    if(azz == 600):
+        azz = 600
     else:
-        print(DataTest)
+        azz = azz + 10
+    print(azz)
+    for i in range(azz):
+        DataTest.append(ezz)
+        
+################################################
+
+# Algorithm
+################################################
+    x = InverSquareRoot(DataTest)
+    print(x)

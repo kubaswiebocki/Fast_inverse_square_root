@@ -9,11 +9,11 @@
 #include "xuartps.h"
 #include "sleep.h"
 
-#define NBR_OF_DATA 500 //All possible values for the range
-#define dataSize NBR_OF_DATA*4
+#define NBR_OF_VECT 600 //All possible values for the range
+#define VectSize NBR_OF_VECT*4
 
-u32 data_out[NBR_OF_DATA]; //Accelerator output buffer
-u32 inputData32[NBR_OF_DATA];
+u32 data_out[NBR_OF_VECT]; //Accelerator output buffer
+u32 inputData32[NBR_OF_VECT];
 
 //***************************************************************************//
 
@@ -65,11 +65,13 @@ int main(){
 	u32 totalTransmittedBytes = 0;
 	u32 transmittedBytes = 0;
 	u32 nbr_of_results;
+	u32 NBR_OF_DATA;
+	u32 dataSize;
 	XUartPs_Config *myUartConfig;
 	XUartPs myUart;
 
-	inputData = malloc(sizeof(u8)*dataSize);
-	outputData8 = malloc(sizeof(u8)*dataSize);
+	inputData = malloc(sizeof(u8)*VectSize);
+	outputData8 = malloc(sizeof(u8)*VectSize);
 	myUartConfig = XUartPs_LookupConfig(XPAR_PS7_UART_1_DEVICE_ID);
 	status = XUartPs_CfgInitialize(&myUart, myUartConfig, myUartConfig->BaseAddress);
 	if(status != XST_SUCCESS){
@@ -83,6 +85,19 @@ int main(){
 //FIFO and FPGA algorithm
 //**********************************************************//
 while(1){
+	//number of vectors
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	while(totalReceivedBytes < 4){
+		receivedBytes = XUartPs_Recv(&myUart,(u8*)&inputData[totalReceivedBytes],100);
+		totalReceivedBytes += receivedBytes;
+	}
+	receivedBytes = 0;
+	totalReceivedBytes = 0;
+	NBR_OF_DATA = combine_8bit_to_32bit(inputData[0], inputData[1], inputData[2], inputData[3]);;
+	dataSize = NBR_OF_DATA*4;
+
+	//Data to compute
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	while(totalReceivedBytes < dataSize){
 		receivedBytes = XUartPs_Recv(&myUart,(u8*)&inputData[totalReceivedBytes],100);
 		totalReceivedBytes += receivedBytes;
@@ -93,17 +108,17 @@ while(1){
 	fisr_calc(inputData32, NBR_OF_DATA, data_out, &nbr_of_results);
 
 	for(int i=0; i<NBR_OF_DATA; i++){
-		outputData8[i*4] =   (data_out[i] >> 24) & 0xFF;
-		outputData8[1+i*4] = (data_out[i] >> 16) & 0xFF;
-		outputData8[2+i*4] = (data_out[i] >> 8)  & 0xFF;
-		outputData8[3+i*4] = (data_out[i] >> 0)  & 0xFF;
-	}
+		for (int j=0; j<4; j++){outputData8[j+i*4] = (data_out[i] >> (3-j)*8) & 0xFF;}
+		}
 
 	while(totalTransmittedBytes < dataSize){
 		transmittedBytes = XUartPs_Send(&myUart, (u8*)&outputData8[totalTransmittedBytes], 4);
 		totalTransmittedBytes += transmittedBytes;
 		usleep(10);
 	}
+
+	//Clean up data
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	receivedBytes = 0;
 	totalReceivedBytes = 0;
 	transmittedBytes = 0;
