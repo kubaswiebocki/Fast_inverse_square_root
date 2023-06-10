@@ -8,10 +8,10 @@ WIDTH = 800
 HEIGHT = 600
 BG_COLOR = (255, 255, 255)
 
-OBJECT_SIZE = 200
+OBJECT_SIZE = 350
 OBJECT_COLOR_START = (255, 0, 0)
 OBJECT_COLOR_END = (50, 50, 50)
-FOCAL_LENGTH = 500
+FOCAL_LENGTH = 400
 
 object_position = [0, 0, -FOCAL_LENGTH]
 object_velocity = [0, 0, 0]
@@ -61,9 +61,9 @@ def main():
             object_velocity[2] = 0
             
         if keys[pygame.K_LEFT]:
-            object_velocity[0] = 1  
+            object_velocity[0] = 2  
         elif keys[pygame.K_RIGHT]:
-            object_velocity[0] = -1  
+            object_velocity[0] = -2  
         else:
             object_velocity[0] = 0
 
@@ -76,12 +76,15 @@ def main():
             else:
                 object_velocity[1] = 0
 
-        if object_position[2] >= -500:
+        if object_position[2] > -500:
             object_position[0] -= object_velocity[0]
+            object_position[2] = -500
         else:
             object_position[0] += object_velocity[0]
+            object_position[2] += object_velocity[2]
         object_position[1] += object_velocity[1]
-        object_position[2] += object_velocity[2]
+        
+        
         screen.fill(BG_COLOR)
         draw_object(object_position)
         font = pygame.font.SysFont(None, 24)
