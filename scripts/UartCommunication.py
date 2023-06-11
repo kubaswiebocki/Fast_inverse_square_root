@@ -64,9 +64,12 @@ while(1):
         azz = 590
     else:
         azz = azz + 10
-    print(azz)
+    print("-----------------------------------------------------------------------")
+    print("number of data:" ,azz, "DataIn:", ezz, "DataFisrOut:")
     for i in range(azz):
         DataTest.append(ezz)
+    print("")
+    
         
 ################################################
 
