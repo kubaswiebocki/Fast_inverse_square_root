@@ -2,7 +2,7 @@
 ## Descrpition
 In this project we will implement fast inverse square root algorithm using verilog. 
 It is pipepline version project with FIFO AXI implementation.
-To communicate PC with Zedboard we are using UART.
+To communicate PC with Zedboard we are using lower level UART.
 
 ## Functionality Test
 To test funtionality we created simple apps in python.
