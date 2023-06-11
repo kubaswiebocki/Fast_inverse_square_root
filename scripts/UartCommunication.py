@@ -60,8 +60,8 @@ while(1):
     #DataTest = [1, 1, 1, 2, 2, 2, 3, 3, 3, 5]
     DataTest = []
     ezz = ezz + 0.01
-    if(azz == 600):
-        azz = 600
+    if(azz == 590):
+        azz = 590
     else:
         azz = azz + 10
     print(azz)
@@ -72,5 +72,5 @@ while(1):
 
 # Algorithm
 ################################################
-    x = InverSquareRoot([250000])
-    print(1/x[0])
+    x = InverSquareRoot(DataTest)
+    print(x)
