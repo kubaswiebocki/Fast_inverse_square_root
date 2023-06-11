@@ -1,5 +1,7 @@
 import pygame
 import math
+import struct
+import serial
 
 # Functions
 def bytes_to_u32(byte_data):
@@ -81,14 +83,14 @@ while running:
                 vector_length = math.sqrt(dx**2 + dy**2)
                 vector_lengthFisr = 1/InverSquareRoot([dx**2 + dy**2])[0]
                 vector_angle = math.atan2(dy, dx)
-                vector_angleFisr = math.atan2(dy+5, dx+20)
+                vector_angleFisr = math.atan2(dy, dx)
     screen.fill((0, 0, 0))
     
     end_point = (
         start_point[0] + (vector_length * math.cos(vector_angle)),
         start_point[1] + vector_length * math.sin(vector_angle)
     )
-    end_point2 = (
+    end_pointFisr = (
         start_point[0] + (vector_lengthFisr * math.cos(vector_angleFisr)),
         start_point[1] + vector_lengthFisr * math.sin(vector_angleFisr)
     )
@@ -100,11 +102,11 @@ while running:
         pygame.draw.line(screen, (255, 255, 255), (0, y), (screen.get_width(), y))
     
     pygame.draw.line(screen, (0, 255, 0), start_point, end_point, 2)
-    pygame.draw.line(screen, (255, 0, 0), start_point, end_point2, 2)
+    pygame.draw.line(screen, (255, 0, 0), start_point, end_pointFisr, 2)
     
     input_coords = font.render(f"Input coords -> X: {mouse_pos[0]:.2f} Y: {mouse_pos[1]:.2f}", True, (255, 255, 255))
     sqrt_calc = font.render(f"SQRT -> Vector Length: {vector_length:.2f} calc coords: X: {end_point[0]:.2f} Y: {end_point[1]:.2f}", True, (0, 255, 0))
-    fisr_calc = font.render(f"FISR -> Vector Length: {vector_length:.2f} calc coords: X: {end_point2[0]:.2f} Y: {end_point2[1]:.2f}", True, (255, 0, 0))
+    fisr_calc = font.render(f"FISR -> Vector Length: {vector_lengthFisr:.2f} calc coords: X: {end_pointFisr[0]:.2f} Y: {end_pointFisr[1]:.2f}", True, (255, 0, 0))
     diff_vectors = font.render(f"Vector Length calculation error -> {abs(vector_length-vector_lengthFisr):.6f}", True, (255, 255, 255))
     screen.blit(input_coords, (10, 10))
     screen.blit(sqrt_calc, (10, 40))
